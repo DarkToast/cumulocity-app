@@ -1,12 +1,14 @@
 package cumulocity
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"tarent.de/schmidt/client-user/application"
+	"tarent.de/schmidt/client-user/domain"
 	"time"
 )
 
@@ -16,7 +18,7 @@ type Client struct {
 }
 
 func (client *Client) GetDevice(deviceId DeviceId) (*Device, error) {
-	object, err := client.receive(fmt.Sprintf("/inventory/managedObjects/%s", string(deviceId)))
+	object, err := client.get(fmt.Sprintf("/inventory/managedObjects/%s", string(deviceId)))
 	if err != nil {
 		log.Printf("Error receving Device with id: %s", string(deviceId))
 		return nil, err
@@ -38,13 +40,40 @@ func (client *Client) GetDevice(deviceId DeviceId) (*Device, error) {
 	}, nil
 }
 
-func (client *Client) receive(path string) (map[string]interface{}, error) {
+func (client *Client) FindByDomainDeviceId(id domain.DeviceId) (*Device, error) {
+	return nil, nil
+}
+
+func (client *Client) SendMeasurement(measurement Measurement) error {
+	_, err := client.post("/measurement/measurements", measurement.Json())
+	if err != nil {
+		log.Printf("Error while seding a new measurement for device: %s", string(measurement.Source))
+		return err
+	}
+	return nil
+}
+
+func (client *Client) post(path string, body string) (map[string]interface{}, error) {
+	req, err := http.NewRequest(http.MethodPost, client.configuration.COMULOCITY_URL+path, bytes.NewBufferString(body))
+	if err != nil {
+		log.Printf("Error: While creating a request: %s", err.Error())
+		return nil, err
+	}
+
+	return client.request(req)
+}
+
+func (client *Client) get(path string) (map[string]interface{}, error) {
 	req, err := http.NewRequest(http.MethodGet, client.configuration.COMULOCITY_URL+path, nil)
 	if err != nil {
 		log.Printf("Error: While creating a request: %s", err.Error())
 		return nil, err
 	}
 
+	return client.request(req)
+}
+
+func (client *Client) request(req *http.Request) (map[string]interface{}, error) {
 	req.SetBasicAuth(client.configuration.COMULOCITY_USERNAME, client.configuration.COMULOCITY_PASSWORD)
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
@@ -66,6 +95,5 @@ func (client *Client) receive(path string) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	fmt.Println(result)
 	return result, nil
 }
