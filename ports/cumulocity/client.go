@@ -54,7 +54,10 @@ func (client *Client) SendMeasurement(measurement Measurement) error {
 }
 
 func (client *Client) post(path string, body string) (map[string]interface{}, error) {
-	req, err := http.NewRequest(http.MethodPost, client.configuration.COMULOCITY_URL+path, bytes.NewBufferString(body))
+	url := client.configuration.COMULOCITY_URL + path
+	log.Printf("HTTP : POST on URL " + url)
+
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBufferString(body))
 	if err != nil {
 		log.Printf("Error: While creating a request: %s", err.Error())
 		return nil, err
@@ -64,7 +67,10 @@ func (client *Client) post(path string, body string) (map[string]interface{}, er
 }
 
 func (client *Client) get(path string) (map[string]interface{}, error) {
-	req, err := http.NewRequest(http.MethodGet, client.configuration.COMULOCITY_URL+path, nil)
+	url := client.configuration.COMULOCITY_URL + path
+	log.Printf("HTTP : GET on URL " + url)
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Printf("Error: While creating a request: %s", err.Error())
 		return nil, err
@@ -89,10 +95,13 @@ func (client *Client) request(req *http.Request) (map[string]interface{}, error)
 	}
 
 	var result map[string]interface{}
-	err = json.Unmarshal(b, &result)
-	if err != nil {
-		log.Printf("Error while parsing response JSON: %s", err.Error())
-		return nil, err
+
+	if len(b) > 0 {
+		err = json.Unmarshal(b, &result)
+		if err != nil {
+			log.Printf("Error while parsing response JSON: %s", err.Error())
+			return nil, err
+		}
 	}
 
 	return result, nil

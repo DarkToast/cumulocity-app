@@ -1,13 +1,34 @@
 package cumulocity
 
 import (
-	"fmt"
+	"log"
 	"tarent.de/schmidt/client-user/domain"
+	"time"
 )
 
-func processMeasurement(channel <-chan domain.Measurement, comulocityClient *Client) {
-	_, _ = comulocityClient.GetDevice(DeviceId("9636292"))
+var deviceIdMap = map[domain.DeviceId]DeviceId{
+	domain.DeviceId(1): DeviceId("9636292"),
+}
+
+func processMeasurement(channel <-chan domain.Measurement, cumulocityClient *Client) {
+	_, _ = cumulocityClient.GetDevice(DeviceId("9636292"))
 	for measurement := range channel {
-		fmt.Printf("Got a new measurement with temp: %.2f and humidity %.2f for device %d\n", measurement.Temperature, measurement.Humidity, measurement.DeviceId)
+		log.Printf("Got a new measurement with temp: %.2f and humidity %.2f for device %d\n", measurement.Temperature, measurement.Humidity, measurement.DeviceId)
+
+		temperatureMetric := Temperature{value: float64(measurement.Temperature), unit: C}
+		humidityMetric := Humidity{value: float64(measurement.Humidity)}
+		cumulocityDeviceId := deviceIdMap[measurement.DeviceId]
+
+		measurement := Measurement{
+			Source:  cumulocityDeviceId,
+			Time:    time.Now(),
+			Type:    "DHT22",
+			Metrics: []Metric{temperatureMetric, humidityMetric},
+		}
+
+		err := cumulocityClient.SendMeasurement(measurement)
+		if err != nil {
+			log.Printf("Error while processing measurement: %s", err.Error())
+		}
 	}
 }
