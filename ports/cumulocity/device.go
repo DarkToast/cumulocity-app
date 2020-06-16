@@ -1,6 +1,8 @@
 package cumulocity
 
-import "time"
+import (
+	"time"
+)
 
 type DeviceId string
 type Name string
