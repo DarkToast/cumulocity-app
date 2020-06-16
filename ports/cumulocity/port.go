@@ -22,6 +22,6 @@ func CreatePort(configuration *application.Configuration, httpClient *http.Clien
 func processMeasurement(channel <-chan domain.Measurement, comulocityClient *Client) {
 	_, _ = comulocityClient.GetDevice(DeviceId("9636292"))
 	for measurement := range channel {
-		fmt.Printf("Got a new measurement with temp: %.2f and humidity %.2f\n", float64(measurement.Temperature), float64(measurement.Humidity))
+		fmt.Printf("Got a new measurement with temp: %.2f and humidity %.2f for device %d\n", measurement.Temperature, measurement.Humidity, measurement.DeviceId)
 	}
 }

@@ -1,15 +1,24 @@
 package mqtt
 
 import (
+	"encoding/binary"
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
+	"regexp"
+	"strconv"
+	"tarent.de/schmidt/client-user/domain"
 )
 
 type Port struct {
 	Client        MQTT.Client
 	connected     bool
-	subscriptions []chan []byte
+	subscriptions []chan domain.Measurement
+}
+
+type Message struct {
+	Payload []byte
+	Topic   string
 }
 
 func (port *Port) Connect() error {
@@ -41,8 +50,8 @@ func (port *Port) Disconnect() {
 	}
 }
 
-func (port *Port) Subscribe(topic string, qos int) (<-chan []byte, error) {
-	channel := make(chan []byte, 10)
+func (port *Port) Subscribe(topic string, qos int) (<-chan domain.Measurement, error) {
+	channel := make(chan domain.Measurement, 10)
 
 	if token := port.Client.Subscribe(topic, byte(qos), makeChannelReceiver(channel)); token.Wait() && token.Error() != nil {
 		close(channel)
@@ -54,10 +63,39 @@ func (port *Port) Subscribe(topic string, qos int) (<-chan []byte, error) {
 	}
 }
 
-func makeChannelReceiver(c chan<- []byte) func(client MQTT.Client, message MQTT.Message) {
+func (port *Port) Connected() bool {
+	return port.connected
+}
+
+func makeChannelReceiver(c chan<- domain.Measurement) func(client MQTT.Client, message MQTT.Message) {
 	return func(client MQTT.Client, message MQTT.Message) {
-		payload := message.Payload()
 		log.Printf("Debug: Received message on topic %s", message.Topic())
-		c <- payload
+		match := topicPattern.FindStringSubmatch(message.Topic())
+		if len(match) < 2 {
+			log.Printf("Error while parsing the numeric id of the mqtt topic: %s. Ignoring it! \n", message.Topic())
+			return
+		}
+
+		if len(message.Payload()) != 4 {
+			log.Print("Error while parsing the message payload. Expected a two uint16 (4 bytes) value.")
+			return
+		}
+
+		foundId, _ := strconv.Atoi(match[1])
+		deviceId := domain.DeviceId(foundId)
+		temp := domain.Temperature(byteToFloat(message.Payload()[:2]))
+		humidity := domain.Humidity(byteToFloat(message.Payload()[2:]))
+
+		c <- domain.Measurement{
+			Temperature: temp,
+			Humidity:    humidity,
+			DeviceId:    deviceId,
+		}
 	}
+}
+
+var topicPattern = regexp.MustCompile("^/d/([\\d]+)/th$")
+
+func byteToFloat(array []byte) float64 {
+	return float64(binary.LittleEndian.Uint16(array)) / 100
 }

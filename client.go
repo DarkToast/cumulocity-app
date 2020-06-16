@@ -16,14 +16,13 @@ func main() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
 	mqttPort := mqtt.CreatePort(application.ProductionConfig)
-
-	mqttChannel, err := mqttPort.Subscribe("/d/+/th", 0)
+	mqttChannel, err := mqttPort.Subscribe(application.ProductionConfig.MQTT_TOPIC, 0)
 	if err != nil {
-		log.Fatal("Could not subscribe to topic /d/+/th")
+		log.Fatalf("Could not subscribe to topic %s", application.ProductionConfig.MQTT_TOPIC)
 	}
 
-	cumulocityChannel := cumulocity.CreatePort(application.ProductionConfig, &http.Client{})
-	go application.Service(mqttChannel, cumulocityChannel.Measurements)
+	cumulocityPort := cumulocity.CreatePort(application.ProductionConfig, &http.Client{})
+	go application.Service(mqttChannel, cumulocityPort.Measurements)
 
 	<-c
 	mqttPort.Disconnect()
