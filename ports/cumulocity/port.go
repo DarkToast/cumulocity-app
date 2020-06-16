@@ -1,7 +1,6 @@
 package cumulocity
 
 import (
-	"fmt"
 	"net/http"
 	"tarent.de/schmidt/client-user/application"
 	"tarent.de/schmidt/client-user/domain"
@@ -12,16 +11,9 @@ type Port struct {
 }
 
 func CreatePort(configuration *application.Configuration, httpClient *http.Client) *Port {
-	comulocityClient := &Client{configuration: configuration, httpClient: httpClient}
+	cumulocityClient := &Client{configuration: configuration, httpClient: httpClient}
 
 	channel := make(chan domain.Measurement, 10)
-	go processMeasurement(channel, comulocityClient)
+	go processMeasurement(channel, cumulocityClient)
 	return &Port{Measurements: channel}
-}
-
-func processMeasurement(channel <-chan domain.Measurement, comulocityClient *Client) {
-	_, _ = comulocityClient.GetDevice(DeviceId("9636292"))
-	for measurement := range channel {
-		fmt.Printf("Got a new measurement with temp: %.2f and humidity %.2f for device %d\n", measurement.Temperature, measurement.Humidity, measurement.DeviceId)
-	}
 }
