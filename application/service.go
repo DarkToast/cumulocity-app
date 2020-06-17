@@ -2,6 +2,7 @@ package application
 
 import (
 	"encoding/binary"
+	"log"
 	"tarent.de/schmidt/client-user/domain"
 )
 
@@ -13,4 +14,7 @@ func Service(mqttPort <-chan domain.Measurement, cumulocityPort chan<- domain.Me
 	for message := range mqttPort {
 		cumulocityPort <- message
 	}
+
+	log.Println("Application stopped. Closing target channels")
+	close(cumulocityPort)
 }
