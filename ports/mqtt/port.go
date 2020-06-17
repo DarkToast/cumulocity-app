@@ -44,7 +44,7 @@ func (port *Port) Disconnect() {
 		port.Client.Disconnect(500)
 		log.Println("MQTT Port disconnected")
 		for i, channel := range port.subscriptions {
-			log.Printf("Closing channel %d", i)
+			log.Printf("Closing MQTT channel %d", i)
 			close(channel)
 		}
 	}
