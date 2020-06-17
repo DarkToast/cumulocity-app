@@ -10,8 +10,9 @@ type Port struct {
 	Measurements chan<- domain.Measurement
 }
 
-func CreatePort(configuration *application.Configuration, httpClient *http.Client) *Port {
-	cumulocityClient := &Client{configuration: configuration, httpClient: httpClient}
+func CreatePort(configuration *application.Configuration, http *http.Client) *Port {
+	httpClient := &HttpClient{configuration: configuration, httpClient: http}
+	cumulocityClient := &Client{httpClient: httpClient}
 
 	channel := make(chan domain.Measurement, 10)
 	go processMeasurement(channel, cumulocityClient)
