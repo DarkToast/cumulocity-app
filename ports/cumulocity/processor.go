@@ -6,12 +6,14 @@ import (
 	"time"
 )
 
-var deviceIdMap = map[domain.DeviceId]DeviceId{
-	domain.DeviceId(1): DeviceId("9636292"),
+var deviceIdMap = map[domain.DeviceId]Id{
+	domain.DeviceId(1): Id("9636292"),
 }
 
 func processMeasurement(channel <-chan domain.Measurement, cumulocityClient *Client) {
-	_, _ = cumulocityClient.GetDevice(DeviceId("9636292"))
+	device, _ := cumulocityClient.GetDevice("9636292")
+	log.Print(device)
+
 	for measurement := range channel {
 		log.Printf("Got a new measurement with temp: %.2f and humidity %.2f for device %d\n", measurement.Temperature, measurement.Humidity, measurement.DeviceId)
 

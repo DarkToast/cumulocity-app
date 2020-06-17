@@ -4,15 +4,15 @@ import (
 	"time"
 )
 
-type DeviceId string
+type Id string
 type Name string
 type Owner string
 
 type Device struct {
-	Id             DeviceId
-	Name           Name
-	Owner          Owner
-	Created        time.Time
-	ChildDeviceIds []DeviceId
-	ParentDeviceId *DeviceId
+	Id            Id
+	Name          Name
+	Owner         Owner
+	CreationTime  time.Time
+	ChildDevices  []Id
+	ParentDevices []Id
 }

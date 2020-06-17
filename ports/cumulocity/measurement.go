@@ -6,7 +6,7 @@ import (
 )
 
 type Measurement struct {
-	Source  DeviceId
+	Source  Id
 	Time    time.Time
 	Type    string
 	Metrics []Metric
