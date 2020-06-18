@@ -16,7 +16,6 @@ type HttpClient struct {
 
 func (client *HttpClient) post(path string, body string) (map[string]interface{}, error) {
 	url := client.configuration.COMULOCITY_URL + path
-	log.Printf("HTTP : POST on URL " + url)
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBufferString(body))
 	if err != nil {
@@ -29,7 +28,6 @@ func (client *HttpClient) post(path string, body string) (map[string]interface{}
 
 func (client *HttpClient) get(path string) (map[string]interface{}, error) {
 	url := client.configuration.COMULOCITY_URL + path
-	log.Printf("HTTP : GET on URL " + url)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -41,12 +39,16 @@ func (client *HttpClient) get(path string) (map[string]interface{}, error) {
 }
 
 func (client *HttpClient) request(req *http.Request) (map[string]interface{}, error) {
+	log.Printf("HTTP %s on URL %s", req.Method, req.URL)
+
 	req.SetBasicAuth(client.configuration.COMULOCITY_USERNAME, client.configuration.COMULOCITY_PASSWORD)
+
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
 		log.Printf("An error occured: %s", err.Error())
 		return nil, err
 	}
+	log.Printf("Got status %d", resp.StatusCode)
 	defer resp.Body.Close()
 
 	b, err := ioutil.ReadAll(resp.Body)
