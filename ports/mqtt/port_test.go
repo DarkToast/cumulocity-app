@@ -90,6 +90,10 @@ func TestSubscription(t *testing.T) {
 			given{valuesToByteArray(3250, 0), "/d/42/th"},
 			expected{true, 32.5, 0, 42},
 		},
+		{"Correct data with negatives",
+			given{valuesToByteArray(-400, 3250), "/d/42/th"},
+			expected{true, -4.0, 32.50, 42},
+		},
 		{"Unparsable topic",
 			given{valuesToByteArray(3250, 6420), "/d/foobar/th"},
 			expected{false, 0, 0, 0},
@@ -134,7 +138,7 @@ func TestSubscription(t *testing.T) {
 	}
 }
 
-func valuesToByteArray(temperature int, humidity int) []byte {
+func valuesToByteArray(temperature int16, humidity int16) []byte {
 	ta := make([]byte, 2)
 	ha := make([]byte, 2)
 	binary.LittleEndian.PutUint16(ta, uint16(temperature))

@@ -97,5 +97,5 @@ func makeChannelReceiver(c chan<- domain.Measurement) func(client MQTT.Client, m
 var topicPattern = regexp.MustCompile("^/d/([\\d]+)/th$")
 
 func byteToFloat(array []byte) float64 {
-	return float64(binary.LittleEndian.Uint16(array)) / 100
+	return float64(int16(binary.LittleEndian.Uint16(array))) / 100
 }
