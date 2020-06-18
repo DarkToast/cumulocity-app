@@ -25,12 +25,12 @@ func (client *Client) GetDevice(id Id) (*Device, error) {
 	}
 
 	return &Device{
-		Id:             Id(object["id"].(string)),
-		Name:           Name(object["name"].(string)),
-		Owner:          Owner(object["owner"].(string)),
-		Created:        t,
-		ChildDeviceIds: []Id{},
-		ParentDeviceId: nil,
+		Id:            Id(object["id"].(string)),
+		Name:          Name(object["name"].(string)),
+		Owner:         Owner(object["owner"].(string)),
+		CreationTime:  t,
+		ChildDevices:  []Id{},
+		ParentDevices: []Id{},
 	}, nil
 }
 
