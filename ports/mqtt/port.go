@@ -7,7 +7,7 @@ import (
 	"log"
 	"regexp"
 	"strconv"
-	"tarent.de/schmidt/client-user/domain"
+	"tarent.de/schmidt/cumulocity-gateway/domain"
 )
 
 type Port struct {

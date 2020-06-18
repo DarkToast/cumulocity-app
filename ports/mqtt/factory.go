@@ -4,19 +4,19 @@ import (
 	"fmt"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"log"
-	"tarent.de/schmidt/client-user/application"
+	"tarent.de/schmidt/cumulocity-gateway/configuration"
 )
 
 var port *Port
 
-func CreatePort(configuration *application.Configuration) *Port {
+func CreatePort(configuration *configuration.Config) *Port {
 	if port != nil {
 		return port
 	}
 
 	clientOpts := MQTT.NewClientOptions().
-		AddBroker(fmt.Sprintf("tcp://%s:%d", configuration.MQTT_HOSTNAME, configuration.MQTT_PORT)).
-		SetClientID("gateway").
+		AddBroker(fmt.Sprintf("tcp://%s:%d", configuration.Mqtt.Hostname, configuration.Mqtt.Port)).
+		SetClientID(configuration.Mqtt.ClientId).
 		SetCleanSession(true)
 	mqttClient := MQTT.NewClient(clientOpts)
 	mqttPort := &Port{Client: mqttClient}

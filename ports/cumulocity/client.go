@@ -3,7 +3,7 @@ package cumulocity
 import (
 	"fmt"
 	"log"
-	"tarent.de/schmidt/client-user/domain"
+	"tarent.de/schmidt/cumulocity-gateway/domain"
 	"time"
 )
 
@@ -39,6 +39,8 @@ func (client *Client) FindByDomainDeviceId(id domain.DeviceId) (*Device, error) 
 }
 
 func (client *Client) SendMeasurement(measurement Measurement) error {
+	log.Printf("Sending measurement: %s", measurement.Json())
+
 	_, err := client.httpClient.post("/measurement/measurements", measurement.Json())
 	if err != nil {
 		log.Printf("Error while seding a new measurement for device: %s", string(measurement.Source))

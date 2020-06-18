@@ -3,7 +3,7 @@ package application
 import (
 	"encoding/binary"
 	"log"
-	"tarent.de/schmidt/client-user/domain"
+	"tarent.de/schmidt/cumulocity-gateway/domain"
 )
 
 func byteToFloat(array []byte) float64 {

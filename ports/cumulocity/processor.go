@@ -2,7 +2,7 @@ package cumulocity
 
 import (
 	"log"
-	"tarent.de/schmidt/client-user/domain"
+	"tarent.de/schmidt/cumulocity-gateway/domain"
 	"time"
 )
 

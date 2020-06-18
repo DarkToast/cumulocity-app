@@ -6,16 +6,16 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"tarent.de/schmidt/client-user/application"
+	"tarent.de/schmidt/cumulocity-gateway/configuration"
 )
 
 type HttpClient struct {
-	configuration *application.Configuration
-	httpClient    *http.Client
+	config     *configuration.Config
+	httpClient *http.Client
 }
 
 func (client *HttpClient) post(path string, body string) (map[string]interface{}, error) {
-	url := client.configuration.COMULOCITY_URL + path
+	url := client.config.Cumulocity.Url + path
 
 	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBufferString(body))
 	if err != nil {
@@ -27,7 +27,7 @@ func (client *HttpClient) post(path string, body string) (map[string]interface{}
 }
 
 func (client *HttpClient) get(path string) (map[string]interface{}, error) {
-	url := client.configuration.COMULOCITY_URL + path
+	url := client.config.Cumulocity.Url + path
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -41,7 +41,7 @@ func (client *HttpClient) get(path string) (map[string]interface{}, error) {
 func (client *HttpClient) request(req *http.Request) (map[string]interface{}, error) {
 	log.Printf("HTTP %s on URL %s", req.Method, req.URL)
 
-	req.SetBasicAuth(client.configuration.COMULOCITY_USERNAME, client.configuration.COMULOCITY_PASSWORD)
+	req.SetBasicAuth(client.config.Cumulocity.Username, client.config.Cumulocity.Password)
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {

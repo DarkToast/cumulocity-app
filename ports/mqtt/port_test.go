@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"errors"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
-	"tarent.de/schmidt/client-user/domain"
+	"tarent.de/schmidt/cumulocity-gateway/domain"
 	"testing"
 )
 
