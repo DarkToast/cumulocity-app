@@ -4,3 +4,4 @@
 bin/*
 old/*
 config.yml
+cumulocity-gateway
