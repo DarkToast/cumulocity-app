@@ -1,0 +1,21 @@
+image: golang:1.14
+
+stages:
+  - test
+  - build
+
+Test:
+  stage: test
+  script:
+    - go fmt $(go list ./... | grep -v /vendor/)
+    - go install -v ./...
+  tags:
+    - docker
+
+Build:
+  stage: test
+  script:
+    - go get -d -v ./...
+    - go install -v ./...
+  tags:
+    - docker

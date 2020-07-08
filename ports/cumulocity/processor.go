@@ -1,36 +1,52 @@
 package cumulocity
 
 import (
+	m "github.com/tarent/gomulocity/measurement"
 	"log"
 	"tarent.de/schmidt/cumulocity-gateway/domain"
 	"time"
 )
 
-var deviceIdMap = map[domain.DeviceId]Id{
-	domain.DeviceId(1): Id("9636292"),
+var deviceIdMap = map[domain.DeviceId]m.Source{
+	domain.DeviceId(1): {Id: "9636292"},
 }
 
-func processMeasurement(channel <-chan domain.Measurement, cumulocityClient *Client) {
-	device, _ := cumulocityClient.GetDevice("9636292")
-	log.Print(device)
-
+func processMeasurement(channel <-chan domain.Measurement, measurementApi m.MeasurementApi) {
 	for measurement := range channel {
-		log.Printf("Got a new measurement with temp: %.2f and humidity %.2f for device %d\n", measurement.Temperature, measurement.Humidity, measurement.DeviceId)
+		log.Printf("Got a new measurement with temp: %.2f, humidity %.2f and pressure %.2f for device %d\n",
+			measurement.Temperature, measurement.Humidity, measurement.AirPressure, measurement.DeviceId)
 
-		temperatureMetric := Temperature{value: float64(measurement.Temperature), unit: C}
-		humidityMetric := Humidity{value: float64(measurement.Humidity)}
-		cumulocityDeviceId := deviceIdMap[measurement.DeviceId]
-
-		measurement := Measurement{
-			Source:  cumulocityDeviceId,
-			Time:    time.Now(),
-			Type:    "DHT22",
-			Metrics: []Metric{temperatureMetric, humidityMetric},
+		source, ok := deviceIdMap[measurement.DeviceId]
+		if !ok {
+			log.Printf("Can not map device id %d to cumulocity source. Ignore measurement", measurement.DeviceId)
+			break
 		}
 
-		err := cumulocityClient.SendMeasurement(measurement)
+		t := m.ValueFragment{
+			Value: float64(measurement.Temperature),
+			Unit:  "C",
+		}
+		h := m.ValueFragment{
+			Value: float64(measurement.Humidity),
+			Unit:  "hPa",
+		}
+		p := m.ValueFragment{
+			Value: float64(measurement.AirPressure),
+			Unit:  "hPa",
+		}
+		now := time.Now()
+		newMeasurement := &m.NewMeasurement{
+			Time:            &now,
+			MeasurementType: "",
+			Source:          source,
+			Temperature:     map[string]m.ValueFragment{"desk": t},
+			Humidity:        map[string]m.ValueFragment{"desk": h},
+			AirPressure:     map[string]m.ValueFragment{"desk": p},
+		}
+
+		_, err := measurementApi.Create(newMeasurement)
 		if err != nil {
-			log.Printf("Error while processing measurement: %s", err.Error())
+			log.Printf("Error while creating cumulocty measurement: %s", err.Error())
 		}
 	}
 }

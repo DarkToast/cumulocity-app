@@ -1,5 +1,14 @@
 github.com/eclipse/paho.mqtt.golang v1.2.0 h1:1F8mhG9+aO5/xpdtFkW4SxOJB67ukuDC3t2y2qayIX0=
 github.com/eclipse/paho.mqtt.golang v1.2.0/go.mod h1:H9keYFcgq3Qr5OUJm/JZI/i6U7joQ8SYLhZwfeOo6Ts=
+github.com/orasik/gocomparejson v0.0.0-20171229174629-2835e0393d0f/go.mod h1:oedqrMK95caM7GZZtl46wFqiSp7//yGGU5KM1hFdTRg=
+github.com/relvacode/iso8601 v1.1.0/go.mod h1:FlNp+jz+TXpyRqgmM7tnzHHzBnz776kmAH2h3sZCn0I=
+github.com/tarent/gomulocity v0.0.0-20200706133022-f57ded2e6d4a h1:6AceSEmSwJSQD4EXpFoTuaagS7a49TgXDGsZfqfIk+I=
+github.com/tarent/gomulocity v0.0.0-20200706133022-f57ded2e6d4a/go.mod h1:FbC+MQkBDgT+YCt96IiEWlXmOIck6CCgmf+z4Qt5iKs=
+github.com/tarent/gomulocity v0.0.0-20200707093108-913ca76f2765 h1:n+AHUfTLz/LiSYci8wMrcJKIM7sxBW8kn4lcvpzRvjs=
+github.com/tarent/gomulocity v0.0.0-20200707093108-913ca76f2765/go.mod h1:q8BLMir4eRSJnONbP3HPBUIgh2ic05/36TUbSmWPyEc=
+github.com/tarent/gomulocity v0.0.0-20200708124532-5cba8f2ab1bb h1:jfaKKX9d7jvXbHC1kqd8Ldf4bETTFY6KJaZp4VYE9BE=
+github.com/tarent/gomulocity v0.0.0-20200708134134-4414f8b97e2f h1:9xdm00AQo0SuF30A7UIFTJtGDPc+/xvtgAYFI9RWCJA=
+github.com/tarent/gomulocity v0.0.0-20200708134134-4414f8b97e2f/go.mod h1:q8BLMir4eRSJnONbP3HPBUIgh2ic05/36TUbSmWPyEc=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/net v0.0.0-20200602114024-627f9648deb9 h1:pNX+40auqi2JqRfOP1akLGtYcn15TUbkhwuCO3foqqM=
 golang.org/x/net v0.0.0-20200602114024-627f9648deb9/go.mod h1:qpuaurCH72eLCgpAm/N6yyVIVM9cpaDIP3A8BGJEC5A=

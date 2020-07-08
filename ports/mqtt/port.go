@@ -76,19 +76,24 @@ func makeChannelReceiver(c chan<- domain.Measurement) func(client MQTT.Client, m
 			return
 		}
 
-		if len(message.Payload()) != 4 {
-			log.Print("Error while parsing the message payload. Expected a two uint16 (4 bytes) value.")
+		if len(message.Payload()) != 10 {
+			log.Printf(
+				"Error while parsing the message payload. Expected a two uint16 (10 bytes) value. Was %d",
+				len(message.Payload()),
+			)
 			return
 		}
 
 		foundId, _ := strconv.Atoi(match[1])
 		deviceId := domain.DeviceId(foundId)
-		temp := domain.Temperature(byteToFloat(message.Payload()[:2]))
-		humidity := domain.Humidity(byteToFloat(message.Payload()[2:]))
+		temp := domain.Temperature(byteToFloat(message.Payload()[:2]) / 100)
+		humidity := domain.Humidity(byteToFloat(message.Payload()[2:4]) / 100)
+		pressure := domain.AirPressure(byteToFloat(message.Payload()[8:]) / 10)
 
 		c <- domain.Measurement{
 			Temperature: temp,
 			Humidity:    humidity,
+			AirPressure: pressure,
 			DeviceId:    deviceId,
 		}
 	}
@@ -97,5 +102,5 @@ func makeChannelReceiver(c chan<- domain.Measurement) func(client MQTT.Client, m
 var topicPattern = regexp.MustCompile("^/d/([\\d]+)/th$")
 
 func byteToFloat(array []byte) float64 {
-	return float64(int16(binary.LittleEndian.Uint16(array))) / 100
+	return float64(int16(binary.LittleEndian.Uint16(array)))
 }
