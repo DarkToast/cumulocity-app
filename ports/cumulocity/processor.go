@@ -28,7 +28,7 @@ func processMeasurement(channel <-chan domain.Measurement, measurementApi m.Meas
 		}
 		h := m.ValueFragment{
 			Value: float64(measurement.Humidity),
-			Unit:  "hPa",
+			Unit:  "%RH",
 		}
 		p := m.ValueFragment{
 			Value: float64(measurement.AirPressure),
