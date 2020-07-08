@@ -1,8 +1,8 @@
 package domain
 
-type Temperature float32
-type Humidity float32
-type AirPressure float32
+type Temperature float64
+type Humidity float64
+type AirPressure float64
 type DeviceId int
 
 type Measurement struct {
